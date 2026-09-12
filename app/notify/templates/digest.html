@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<body style="margin:0;padding:0;background:#f3f4f2;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1b2a26;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f2;padding:24px 12px;">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #dfe5e1;">
+  <tr><td style="padding:24px 28px 8px 28px;">
+    <div style="font-size:14px;color:#0f5c46;font-weight:700;">{{ app_name }}</div>
+    <h1 style="margin:8px 0 4px 0;font-size:22px;line-height:1.35;font-weight:800;">{{ heading }}</h1>
+    <div style="font-size:14px;color:#5d6b66;">{{ subheading }}</div>
+  </td></tr>
+
+  {% for m in items %}
+  <tr><td style="padding:16px 28px;border-top:1px solid #e9eeeb;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="vertical-align:top;">
+        <div style="font-size:12px;color:#5d6b66;margin-bottom:4px;">{{ m.ann.agency }}{% if m.ann.region and m.ann.region != '전국' %} · {{ m.ann.region }}{% endif %}</div>
+        <a href="{{ m.ann.url }}" style="font-size:16px;font-weight:700;color:#1b2a26;text-decoration:none;line-height:1.4;">{{ m.ann.title }}</a>
+        {% if m.one_liner %}<div style="font-size:14px;margin-top:6px;">{{ m.one_liner }}</div>{% endif %}
+        {% if show_reasons and m.reasons %}
+        <ul style="margin:8px 0 0 0;padding-left:18px;font-size:13px;color:#3d4a46;line-height:1.5;">
+          {% for r in m.reasons.split('\n') if r.strip() %}<li>{{ r }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </td>
+      <td width="92" style="vertical-align:top;text-align:right;white-space:nowrap;">
+        {% set d = m.ann.days_left(today) %}
+        {% if d is not none %}
+          <span style="display:inline-block;padding:4px 8px;font-size:12px;font-weight:700;border-radius:3px;
+            {% if d <= 7 %}background:#fbe9dd;color:#a44a12;{% else %}background:#e6f1ec;color:#0f5c46;{% endif %}">D-{{ d }}</span>
+        {% else %}
+          <span style="display:inline-block;padding:4px 8px;font-size:12px;background:#eef0ee;color:#5d6b66;border-radius:3px;">상시</span>
+        {% endif %}
+        <div style="font-size:12px;color:#5d6b66;margin-top:8px;">적합도 {{ m.score }}</div>
+      </td>
+    </tr></table>
+  </td></tr>
+  {% endfor %}
+
+  {% if upsell %}
+  <tr><td style="padding:16px 28px;border-top:1px solid #e9eeeb;background:#f6faf8;">
+    <div style="font-size:14px;line-height:1.5;">이번 주에 맞는 공고가 {{ hidden_count }}건 더 있습니다. 프로 요금제는 매일, 전부, 자격 요건 근거와 함께 보내드립니다.</div>
+    <a href="{{ upgrade_url }}" style="display:inline-block;margin-top:10px;padding:10px 16px;background:#0f5c46;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;border-radius:4px;">프로로 바꾸기 (월 {{ pro_price }}원)</a>
+  </td></tr>
+  {% endif %}
+
+  <tr><td style="padding:20px 28px;border-top:1px solid #e9eeeb;font-size:12px;color:#7a8783;line-height:1.6;">
+    자격 판정은 공고 원문을 바탕으로 한 참고용이며, 실제 신청 자격은 공고문과 접수처에서 확인하세요.<br>
+    <a href="{{ settings_url }}" style="color:#5d6b66;">알림 조건 바꾸기</a> · <a href="{{ unsubscribe_url }}" style="color:#5d6b66;">수신 거부</a><br>
+    공고 정보 출처: 기업마당(중소벤처기업부) 등 공공데이터
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

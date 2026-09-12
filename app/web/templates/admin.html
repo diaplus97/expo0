@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}현황 — {{ app_name }}{% endblock %}
+{% block content %}
+<h1>현황</h1>
+<table class="stats">
+  <tr><td>가입 (전체)</td><td>{{ stats.users_total }}</td></tr>
+  <tr><td>수신 중 (확인 완료·활성)</td><td>{{ stats.users_confirmed }}</td></tr>
+  <tr><td>프로</td><td>{{ stats.users_pro }}</td></tr>
+  <tr><td>수집된 공고</td><td>{{ stats.announcements }}</td></tr>
+  <tr><td>채점된 매칭</td><td>{{ stats.matches }}</td></tr>
+  <tr><td>발송된 매칭</td><td>{{ stats.matches_sent }}</td></tr>
+</table>
+{% endblock %}

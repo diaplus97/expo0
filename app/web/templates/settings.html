@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}알림 설정 — {{ app_name }}{% endblock %}
+{% block content %}
+<h1>알림 설정</h1>
+<p class="lead">{{ user.email }} · {% if user.plan == 'pro' %}프로 요금제{% else %}무료 요금제{% endif %}{% if not user.confirmed %} · 이메일 확인 대기 중{% endif %}{% if not user.active %} · 수신 거부 상태{% endif %}</p>
+
+<form class="signup" method="post" action="/u/{{ user.token }}">
+  {% if saved %}<div class="ok" role="status">저장했습니다. 다음 배치부터 새 조건으로 골라드립니다.</div>{% endif %}
+  <div class="row">
+    <div>
+      <label for="region">사업장 지역</label>
+      <select id="region" name="region">{% for r in regions %}<option value="{{ r }}" {% if user.region == r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select>
+    </div>
+    <div>
+      <label for="stage">현재 단계</label>
+      <select id="stage" name="stage">
+        <option value="운영중" {% if user.stage == '운영중' %}selected{% endif %}>사업 운영 중</option>
+        <option value="예비창업" {% if user.stage == '예비창업' %}selected{% endif %}>창업 준비 중</option>
+      </select>
+    </div>
+  </div>
+  <label for="biz_type">업종</label>
+  <input type="text" id="biz_type" name="biz_type" value="{{ user.biz_type }}">
+  <label for="keywords">받고 싶은 지원 (쉼표로 구분)</label>
+  <input type="text" id="keywords" name="keywords" value="{{ user.keywords }}">
+  <div class="row">
+    <div><label for="employees">직원 수</label><input type="number" id="employees" name="employees" min="0" value="{{ user.employees }}"></div>
+    <div><label for="years">업력 (년)</label><input type="number" id="years" name="years" min="0" value="{{ user.years }}"></div>
+  </div>
+  <label for="note">사업 설명 (선택)</label>
+  <textarea id="note" name="note" rows="3" placeholder="예: 작년 매출 8천만원, 온라인 판매는 아직 없음, 직원 채용 계획 있음">{{ user.note }}</textarea>
+  <div class="hint">자격 판정에 그대로 쓰입니다. 매출 규모, 수혜 이력, 계획을 적으면 판정이 정확해집니다.</div>
+
+  <label for="frequency">발송 주기</label>
+  <select id="frequency" name="frequency" {% if user.plan != 'pro' %}disabled{% endif %}>
+    <option value="weekly" {% if user.frequency == 'weekly' %}selected{% endif %}>주 1회 (월요일)</option>
+    <option value="daily" {% if user.frequency == 'daily' %}selected{% endif %}>매일</option>
+  </select>
+  {% if user.plan != 'pro' %}<div class="hint">매일 받기는 프로 요금제에서 선택할 수 있습니다.</div>{% endif %}
+  <button class="primary" type="submit">저장</button>
+</form>
+
+{% if user.plan != 'pro' %}
+<h2 id="pro">프로로 바꾸기</h2>
+<div class="plan pro">
+  <div class="price">월 {{ pro_price }}원</div>
+  <ul><li>매일 발송</li><li>맞는 공고 전부</li><li>자격 요건 판정 근거</li></ul>
+  {% if payment_link %}
+    <p style="margin-top:14px"><a href="{{ payment_link }}?email={{ user.email | urlencode }}"><button class="primary" type="button" style="margin:0">결제하고 프로 시작</button></a></p>
+  {% else %}
+    <p class="muted" style="margin:14px 0 0">결제 준비 중입니다. 준비되면 이메일로 안내드립니다.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if recent %}
+<h2>최근 매칭 결과</h2>
+<div class="digest">
+  {% for m in recent %}
+  <div class="item">
+    <div>
+      <div class="agency">{{ m.announcement.agency }}{% if m.announcement.region != '전국' %} · {{ m.announcement.region }}{% endif %}</div>
+      <div class="title"><a href="{{ m.announcement.url }}" style="color:inherit;text-decoration:none">{{ m.announcement.title }}</a></div>
+      {% if m.one_liner %}<div class="one">{{ m.one_liner }}</div>{% endif %}
+      {% if user.plan == 'pro' and m.reasons %}<ul class="why">{% for r in m.reasons.split('\n') if r.strip() %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div>
+      {% set d = m.announcement.days_left(today) %}
+      {% if d is not none %}<span class="chip {% if d <= 7 %}soon{% endif %}">{% if d < 0 %}마감{% else %}D-{{ d }}{% endif %}</span>{% else %}<span class="chip">상시</span>{% endif %}
+      <div class="score">적합도 {{ m.score }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<p class="muted" style="margin-top:32px"><a href="/u/{{ user.token }}/unsubscribe" style="color:inherit">알림 수신 거부</a></p>
+{% endblock %}

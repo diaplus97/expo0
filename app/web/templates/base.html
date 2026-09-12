@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ app_name }}{% endblock %}</title>
+<meta name="description" content="내 사업에 실제로 신청 가능한 정부 지원사업만 골라 이메일로 보내드립니다.">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --paper:#f5f6f3; --ink:#1b2a26; --ink-2:#4d5a56; --ink-3:#7a8783;
+    --green:#0f5c46; --green-dark:#0b4535; --mint:#d8ebe1; --mint-2:#eef5f1;
+    --amber:#c25e1a; --amber-bg:#fbe9dd; --line:#dbe2dd;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:16px;line-height:1.65;word-break:keep-all}
+  a{color:var(--green)}
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px}
+  header.site{padding:22px 0 8px}
+  header.site .brand{font-weight:800;font-size:17px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+  h1{font-size:clamp(28px,6vw,38px);line-height:1.25;font-weight:800;letter-spacing:-.02em;margin:32px 0 14px}
+  h2{font-size:22px;line-height:1.3;font-weight:800;letter-spacing:-.01em;margin:56px 0 14px}
+  h3{font-size:17px;font-weight:700;margin:0 0 6px}
+  p{margin:0 0 14px}
+  .lead{font-size:18px;color:var(--ink-2);max-width:34em}
+  .muted{color:var(--ink-3);font-size:14px}
+  form.signup{margin:28px 0 8px;padding:22px;background:#fff;border:1px solid var(--line);border-radius:6px}
+  label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+  label:first-child{margin-top:0}
+  input[type=text],input[type=email],input[type=number],select,textarea{width:100%;padding:11px 12px;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid #b9c4be;border-radius:4px}
+  input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #9fd3bd;outline-offset:1px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .hint{font-size:13px;color:var(--ink-3);margin-top:4px}
+  .consent{display:flex;gap:8px;align-items:flex-start;font-size:14px;font-weight:400;margin-top:16px}
+  .consent input{margin-top:5px}
+  button.primary{display:inline-block;width:100%;margin-top:18px;padding:14px 18px;font:inherit;font-size:17px;font-weight:700;color:#fff;background:var(--green);border:0;border-radius:4px;cursor:pointer}
+  button.primary:hover{background:var(--green-dark)}
+  .error{padding:12px 14px;background:var(--amber-bg);color:var(--amber);border-radius:4px;font-size:14px;margin-bottom:12px}
+  .ok{padding:12px 14px;background:var(--mint);color:var(--green-dark);border-radius:4px;font-size:14px;margin-bottom:12px}
+  /* 샘플 다이제스트 카드 — 이 페이지의 한 가지 눈에 띄는 요소 */
+  .digest{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 12px 32px -20px rgba(27,42,38,.35)}
+  .digest .head{padding:18px 22px 10px;border-bottom:1px solid var(--line)}
+  .digest .head .from{font-size:13px;color:var(--green);font-weight:700}
+  .digest .head .subj{font-size:17px;font-weight:800;margin-top:4px}
+  .digest .item{display:grid;grid-template-columns:1fr auto;gap:12px;padding:16px 22px;border-bottom:1px solid #eef1ef}
+  .digest .item:last-child{border-bottom:0}
+  .digest .agency{font-size:12px;color:var(--ink-3)}
+  .digest .title{font-weight:700;line-height:1.4;margin-top:2px}
+  .digest .one{font-size:14px;margin-top:4px;color:var(--ink-2)}
+  .digest .why{font-size:13px;color:var(--ink-2);margin:6px 0 0;padding-left:16px}
+  .chip{display:inline-block;padding:4px 8px;font-size:12px;font-weight:700;border-radius:3px;background:var(--mint-2);color:var(--green);white-space:nowrap}
+  .chip.soon{background:var(--amber-bg);color:var(--amber)}
+  .score{font-size:12px;color:var(--ink-3);text-align:right;margin-top:8px}
+  ol.steps{padding-left:22px;margin:0}
+  ol.steps li{margin-bottom:12px}
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .plan{padding:18px;background:#fff;border:1px solid var(--line);border-radius:6px}
+  .plan.pro{border-color:var(--green)}
+  .plan .price{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:6px 0 10px}
+  .plan ul{margin:0;padding-left:18px;font-size:14px;line-height:1.6}
+  details{border-top:1px solid var(--line);padding:12px 0}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer;font-weight:600}
+  details p{margin:10px 0 0;color:var(--ink-2);font-size:15px}
+  footer.site{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);line-height:1.8}
+  footer.site a{color:var(--ink-3)}
+  table.stats{border-collapse:collapse;width:100%;background:#fff}
+  table.stats td{padding:10px 12px;border:1px solid var(--line)}
+  @media (max-width:520px){.row,.plans{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:no-preference){button.primary{transition:background .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site"><a class="brand" href="/">{{ app_name }}</a></header>
+  {% block content %}{% endblock %}
+  <footer class="site">
+    자격 판정은 공고 원문을 바탕으로 한 참고용입니다. 최종 신청 자격은 공고문과 접수처에서 확인하세요.<br>
+    공고 정보 출처: 기업마당(중소벤처기업부) 등 공공데이터<br>
+    <a href="/privacy">개인정보처리방침</a> · 문의: {{ contact_email | default('help@example.com') }}
+  </footer>
+</div>
+</body>
+</html>
