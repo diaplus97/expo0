@@ -1,12 +1,39 @@
 # Claude Code 인수인계
 
-이 저장소는 fixture 데이터 + mock 채점 + console 메일로 **끝까지 돌아가는 상태**다 (`python -m pytest -q` 8/8 통과, `python -m app.jobs.daily` 실행 시 데모 메일 출력).
+이 저장소는 fixture 데이터 + mock 채점 + console 메일로 **끝까지 돌아가는 상태**다 (`python -m pytest -q` 8/8 통과).
+단, `python -m app.jobs.daily` 는 **확인(confirmed)된 사용자가 DB 에 있을 때만** 메일을 출력한다. 갓 clone 한 상태에서는 사용자가 0명이라 수집 8건 리포트만 나오고 메일은 안 나온다. 데모 메일을 보려면 아래 0단계처럼 사용자를 먼저 만들어야 한다.
 남은 건 외부 연결과 검증이다. 아래 순서대로 Claude Code 에 시키면 된다. 각 블록을 그대로 붙여 넣어도 된다.
 
 ## 0. 먼저 읽을 것
 ```
-이 프로젝트의 README.md, docs/PRD.md, HANDOFF.md 를 읽고 구조를 파악해. 그 다음 python -m pytest -q 로 테스트가 통과하는지 확인하고, python -m app.jobs.daily 를 실행해서 console 메일 출력을 보여줘. 아직 아무것도 고치지 마.
+이 프로젝트의 README.md, docs/PRD.md, HANDOFF.md 를 읽고 구조를 파악해. 그 다음 python -m pytest -q 로 테스트가 통과하는지 확인해. 데모 메일을 보려면 확인된 사용자가 필요하니, 아래 '데모 메일 보는 법' 중 하나로 사용자를 만든 뒤 python -m app.jobs.daily 를 실행해서 console 메일 출력을 보여줘. 아직 아무것도 고치지 마.
 ```
+
+### 데모 메일 보는 법
+배치는 `confirmed=True, active=True` 인 사용자에게만 발송한다. 둘 중 하나로 사용자를 만든다.
+
+**A. 실제 가입 흐름 그대로 (권장)**
+```bash
+uvicorn app.web.main:app --reload       # 터미널 1
+```
+브라우저에서 http://localhost:8000 랜딩 페이지 가입 폼을 제출한다. `EMAIL_BACKEND=console` 이므로 확인 메일은 실제로 발송되지 않고 **uvicorn 터미널에** `=== [console email] ...` 블록으로 찍힌다. 그 안의 `/confirm/<token>` 링크를 브라우저로 열면 확인 완료.
+
+**B. DB 에 바로 넣기 (가입 화면 안 거침)**
+```bash
+python -c "
+from app.db import init_db, session, User
+init_db()
+with session() as db:
+    db.add(User(email='demo@example.com', confirmed=True, region='서울', biz_type='카페', keywords='소상공인,마케팅', employees=2, years=1))
+    db.commit()
+"
+```
+
+그 다음:
+```bash
+python -m app.jobs.daily
+```
+fixture 공고 8건 중 프로필에 맞는 것이 mock 채점을 거쳐 console 메일로 출력된다 (위 B 프로필 기준 3건, 키워드를 비우면 2건). 같은 사용자에게는 무료 요금제 규칙(주 1회, 월요일)에 따라 다음 발송이 미뤄지므로, 다시 보려면 `radar.db` 를 지우고 처음부터 하거나 사용자의 `last_sent_at` 을 비운다.
 
 ## 1. 기업마당 API 실제 연결 (사람이 먼저: bizinfo.go.kr 오픈API 신청해서 키 발급)
 ```
