@@ -36,6 +36,9 @@ python -m app.jobs.daily
 fixture 공고 8건 중 프로필에 맞는 것이 mock 채점을 거쳐 console 메일로 출력된다 (위 B 프로필 기준 3건, 키워드를 비우면 2건). 같은 사용자에게는 무료 요금제 규칙(주 1회, 월요일)에 따라 다음 발송이 미뤄지므로, 다시 보려면 `radar.db` 를 지우고 처음부터 하거나 사용자의 `last_sent_at` 을 비운다.
 
 ## 1. 기업마당 API 실제 연결 (사람이 먼저: bizinfo.go.kr 오픈API 신청해서 키 발급)
+> 클라우드 세션(claude.ai/code)에서는 `.env` 가 없고 bizinfo.go.kr 도 차단된다. 그 경우 사람이 로컬에서
+> `python scripts/bizinfo_probe.py --save tests/fixtures/bizinfo_raw.json` 을 돌려 원본 응답을 저장·커밋한 뒤,
+> 아래 블록 대신 "tests/fixtures/bizinfo_raw.json 을 보고 1단계를 진행해" 라고 시키면 된다.
 ```
 .env 에 BIZINFO_API_KEY 를 넣었어. app/ingest/bizinfo.py 의 BizinfoSource 로 실제 API 를 한 번 호출해서 응답 JSON 1건을 그대로 보여줘. 그 응답의 실제 필드명과 FIELD 매핑을 대조해서 틀린 것을 고치고, 접수기간 문자열 형식이 parse_date_range 로 파싱되는지 확인해. 지역 정보가 어느 필드에 있는지 찾아서 normalize_region 이 제대로 시/도를 뽑는지 샘플 20건으로 검증하고, 안 되면 어댑터를 고쳐. 마지막으로 tests/ 에 실제 응답 1건을 픽스처로 저장한 파싱 테스트를 추가해.
 ```
