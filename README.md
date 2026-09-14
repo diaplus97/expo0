@@ -15,10 +15,29 @@
 ```bash
 pip install -r requirements.txt
 cp .env.example .env
-uvicorn app.web.main:app --reload      # http://localhost:8000
-python -m app.jobs.daily               # 배치 1회 (기본은 fixture + mock + console)
 python -m pytest -q
+uvicorn app.web.main:app --reload      # http://localhost:8000
 ```
+
+배치(`python -m app.jobs.daily`)는 **확인된 사용자에게만** 메일을 보낸다. 사용자가 없으면 수집 리포트만 나오고 메일은 안 나온다. 데모 메일을 보려면 먼저 사용자를 만든다.
+
+- 가입 흐름 그대로: 랜딩 페이지에서 가입 → `EMAIL_BACKEND=console` 이라 확인 메일은 uvicorn 터미널에 찍힌다 → 그 안의 `/confirm/<token>` 링크를 연다.
+- 또는 DB 에 바로 넣기:
+  ```bash
+  python -c "
+  from app.db import init_db, session, User
+  init_db()
+  with session() as db:
+      db.add(User(email='demo@example.com', confirmed=True, region='서울', biz_type='카페', keywords='소상공인,마케팅', employees=2, years=1))
+      db.commit()
+  "
+  ```
+
+그 다음 배치를 돌리면 fixture 공고 8건 중 맞는 것이 mock 채점을 거쳐 console 메일로 출력된다.
+```bash
+python -m app.jobs.daily               # 기본은 fixture + mock + console
+```
+무료 요금제는 주 1회 발송이라 같은 사용자에게 다시 보려면 `radar.db` 를 지우고 처음부터 한다. 자세한 건 `HANDOFF.md` 0단계.
 
 ## 문서
 - `HANDOFF.md` — Claude Code 에 이어서 시킬 작업, 순서대로
