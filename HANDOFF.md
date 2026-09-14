@@ -36,6 +36,11 @@ python -m app.jobs.daily
 fixture 공고 8건 중 프로필에 맞는 것이 mock 채점을 거쳐 console 메일로 출력된다 (위 B 프로필 기준 3건, 키워드를 비우면 2건). 같은 사용자에게는 무료 요금제 규칙(주 1회, 월요일)에 따라 다음 발송이 미뤄지므로, 다시 보려면 `radar.db` 를 지우고 처음부터 하거나 사용자의 `last_sent_at` 을 비운다.
 
 ## 1. 기업마당 API 실제 연결 (사람이 먼저: bizinfo.go.kr 오픈API 신청해서 키 발급)
+> **2026-09-14 진행 상황**: 실제 응답 없이 할 수 있는 부분은 끝냈다. 공개 구현체 두 곳(cweon611/Solverthon 의
+> 실측 주석, kwanGDss/mcp-bizinfo)의 응답 처리 코드를 대조해 `FIELD` 를 확정하고, 공고명 `[경기]` 접두 지역 추출,
+> `jsonArray`/`item` 중첩 대응, 상시 접수 처리, 상대 URL 보정을 넣었다 (`tests/test_bizinfo.py`, 합성 픽스처
+> `tests/fixtures/bizinfo_sample.json`). **남은 것**: 실제 키로 `scripts/bizinfo_probe.py --save tests/fixtures/bizinfo_raw.json`
+> 을 돌려 커밋하면 `test_parse_real_response` 가 자동으로 켜진다. 그 출력에서 '없음' 표시된 키가 있으면 그것만 고친다.
 > 클라우드 세션(claude.ai/code)에서는 `.env` 가 없고 bizinfo.go.kr 도 차단된다. 그 경우 사람이 로컬에서
 > `python scripts/bizinfo_probe.py --save tests/fixtures/bizinfo_raw.json` 을 돌려 원본 응답을 저장·커밋한 뒤,
 > 아래 블록 대신 "tests/fixtures/bizinfo_raw.json 을 보고 1단계를 진행해" 라고 시키면 된다.
@@ -80,7 +85,7 @@ docs/DEPLOY.md 대로 [Fly.io | Railway | Render] 에 배포해줘. SQLite 를 �
 app/config.py            환경변수 → Settings
 app/db.py                User / Announcement / Match 모델, 세션
 app/ingest/base.py       RawAnnouncement DTO, 지역·날짜 정규화
-app/ingest/bizinfo.py    기업마당 어댑터 (FIELD 매핑 확인 필요)
+app/ingest/bizinfo.py    기업마당 어댑터 (FIELD 는 공개 구현체 대조로 확정, 실제 응답 검증 대기)
 app/ingest/sources.py    data.go.kr 범용 어댑터, 픽스처 소스, upsert, run_ingest
 app/matching/prefilter.py 규칙 필터 (지역/마감/단계/키워드 정렬)
 app/matching/scorer.py   MockScorer, AnthropicScorer, SYSTEM_PROMPT, parse_score
@@ -93,5 +98,7 @@ app/web/templates/       base / landing / settings / message / admin / privacy
 app/jobs/daily.py        수집→매칭→발송 배치
 fixtures/                샘플 공고 8건
 tests/test_pipeline.py   8개 테스트
+tests/test_bizinfo.py    기업마당 파싱 테스트 (실제 응답 픽스처가 있으면 추가 검증)
+scripts/bizinfo_probe.py 기업마당 응답 진단·저장
 docs/                    PRD, DEPLOY, LEGAL_CHECKLIST
 ```

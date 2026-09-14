@@ -58,6 +58,21 @@ def normalize_region(text: str | None) -> str:
     return "전국"
 
 
+_TITLE_PREFIX = re.compile(r"^\s*\[([^\]]{2,8})\]")
+
+
+def region_from_title(title: str | None) -> str | None:
+    """'[경기] 2026년 …' 처럼 공고명 앞 대괄호 접두에서 시/도를 뽑는다. 없거나 시/도가 아니면 None."""
+    m = _TITLE_PREFIX.match(title or "")
+    if not m:
+        return None
+    tag = m.group(1).strip()
+    if tag == "전국":
+        return "전국"
+    r = normalize_region(tag)
+    return r if r != "전국" else None
+
+
 _DATE_PATTERNS = ["%Y%m%d", "%Y-%m-%d", "%Y.%m.%d", "%Y/%m/%d"]
 
 

@@ -1,0 +1,47 @@
+{
+  "_note": "합성 샘플. 필드명·형식은 공개 구현체(cweon611/Solverthon 실측 주석, kwanGDss/mcp-bizinfo)를 따랐고 값은 만든 것이다. 실제 응답을 받으면 scripts/bizinfo_probe.py --save tests/fixtures/bizinfo_raw.json 으로 저장하면 테스트가 그 파일을 우선 쓴다.",
+  "jsonArray": [
+    {
+      "pblancId": "PBLN_000000000120806",
+      "pblancNm": "[경기] 2026년 하반기 소상공인 온라인 판로개척 지원사업 모집 공고",
+      "jrsdInsttNm": "경기도",
+      "excInsttNm": "경기도경제과학진흥원",
+      "reqstBeginEndDe": "2026-09-01 ~ 2026-10-02",
+      "pblancUrl": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000120806",
+      "rceptEngnHmpgUrl": "https://www.gbsa.or.kr",
+      "pldirSportRealmLclasCodeNm": "내수",
+      "pldirSportRealmMlsfcCodeNm": "판로·마케팅",
+      "creatPnttm": "2026-09-01 09:12:33",
+      "trgetNm": "경기도 소재 소상공인 (업력 1년 이상)",
+      "reqstMthPapersCn": "<p>온라인 접수 &amp; 이메일 제출</p>",
+      "bsnsSumryCn": "<p>온라인 판로 개척을 위한 &lt;입점·광고비&gt; 최대 300만원 지원</p>",
+      "hashtags": "소상공인,온라인판로,경기",
+      "refrncNm": "031-000-0000",
+      "printFileNm": "공고문.hwpx",
+      "printFlpthNm": "https://www.bizinfo.go.kr/cmm/fms/FileDown.do?atchFileId=X&fileSn=1"
+    },
+    {
+      "pblancId": "PBLN_000000000120807",
+      "pblancNm": "소상공인 경영개선 정책자금 (일반경영안정자금)",
+      "jrsdInsttNm": "중소벤처기업부",
+      "excInsttNm": "소상공인시장진흥공단",
+      "reqstBeginEndDe": "예산 소진 시까지",
+      "pblancUrl": "/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000120807",
+      "pldirSportRealmLclasCodeNm": "금융",
+      "trgetNm": "소상공인",
+      "bsnsSumryCn": "경영안정자금 융자",
+      "hashtags": ""
+    },
+    {
+      "pblancId": "PBLN_000000000120808",
+      "pblancNm": "2026 청년 창업 공간 입주기업 모집",
+      "jrsdInsttNm": "부산광역시",
+      "excInsttNm": "부산경제진흥원",
+      "reqstBeginEndDe": "20260901 ~ 20260919",
+      "pblancUrl": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000120808",
+      "pldirSportRealmLclasCodeNm": "창업",
+      "trgetNm": "예비창업자 및 3년 미만 창업기업",
+      "bsnsSumryCn": "입주 공간 및 멘토링"
+    }
+  ]
+}

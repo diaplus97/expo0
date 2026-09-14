@@ -20,8 +20,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import httpx  # noqa: E402
 
 from app.config import get_settings  # noqa: E402
-from app.ingest.base import normalize_region, parse_date_range  # noqa: E402
-from app.ingest.bizinfo import FIELD, BizinfoSource  # noqa: E402
+from app.ingest.base import normalize_region, parse_date_range, region_from_title  # noqa: E402
+from app.ingest.bizinfo import FIELD, BizinfoSource, infer_region  # noqa: E402
+from app.ingest.bizinfo import extract_items as _extract_items  # noqa: E402
 
 REGION_HINT_WORDS = ("서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원",
                      "충북", "충남", "전북", "전남", "경북", "경남", "제주", "특별시", "광역시", "도")
@@ -43,18 +44,9 @@ def fetch_raw(count: int) -> dict | list:
 
 
 def extract_items(data) -> list[dict]:
-    if isinstance(data, list):
-        return data
     if isinstance(data, dict):
         print("최상위 키:", list(data.keys()))
-        for k in ("jsonArray", "items", "item", "data", "list"):
-            if isinstance(data.get(k), list):
-                print(f"항목 배열 키: '{k}'  (어댑터는 'jsonArray' 를 기대)")
-                return data[k]
-        for v in data.values():
-            if isinstance(v, list) and v and isinstance(v[0], dict):
-                return v
-    return []
+    return _extract_items(data)
 
 
 def main() -> None:
@@ -108,6 +100,8 @@ def main() -> None:
     other = [k for k in keys if k not in cand and any(
         any(w in str(items[i].get(k) or "") for w in REGION_HINT_WORDS) for i in range(min(5, len(items))))]
     print("  값에 지역 단어가 보이는 다른 키:", other)
+    print("  공고명 접두 → 지역:", [(it.get(FIELD["title"], "")[:12], region_from_title(it.get(FIELD["title"]))) for it in items[:20]])
+    print("  infer_region 분포:", dict(Counter(infer_region(it) for it in items[:20])))
 
     print("\n=== 어댑터 parse() 결과 (앞 3건) ===")
     src = BizinfoSource(api_key="probe")

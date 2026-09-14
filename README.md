@@ -46,4 +46,4 @@ python -m app.jobs.daily               # 기본은 fixture + mock + console
 - `docs/LEGAL_CHECKLIST.md` — 출시 전/유료 전환 시 확인 사항
 
 ## 현재 상태
-코드는 fixture 데이터로 끝까지 동작한다. 외부 API 키, 이메일 도메인, 배포, 결제는 계정 소유자만 할 수 있어 미완이다. 특히 `app/ingest/bizinfo.py` 의 필드 매핑은 실제 응답으로 검증해야 한다.
+코드는 fixture 데이터로 끝까지 동작한다. 외부 API 키, 이메일 도메인, 배포, 결제는 계정 소유자만 할 수 있어 미완이다. `app/ingest/bizinfo.py` 의 필드 매핑은 공개 구현체와 대조해 정리했지만, 이 저장소의 키로 받은 실제 응답으로는 아직 검증하지 않았다 (`HANDOFF.md` 1단계).
